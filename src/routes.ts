@@ -1,9 +1,9 @@
-import { RouteProps } from 'react-router-dom';
+import { RouteProps } from "react-router-dom";
 
-import App from './App';
-import Posts from './features/Posts/Posts';
+import App from "./App";
+import { RentalList, RentalPage } from "./containers";
+import Posts from "./features/Posts/Posts";
 
- 
 // interface IRoutes extends RouteProps {
 //   path: string | undefined;
 //   component: React.ComponentType;
@@ -11,13 +11,22 @@ import Posts from './features/Posts/Posts';
 // }
 export const AppRoutes: RouteProps[] = [
   {
-    path: '/',
+    path: "/",
     component: App,
     exact: true
   },
   {
-    path: '/posts',
+    path: "/posts",
     component: Posts,
     exact: true
+  },
+  {
+    path: "/rental",
+    component: RentalList,
+    exact: true
+  },
+  {
+    path: "/rental/:id",
+    component: RentalPage,    
   }
 ];

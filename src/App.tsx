@@ -1,19 +1,18 @@
-import React, { SFC } from 'react';
-import styled from 'react-emotion';
+import React, { FunctionComponent } from 'react';
+import styl from 'react-emotion';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import {Header, RentalList} from './containers';
+
+import {Field} from './Field/Field'
 
 const AppContainer = styled(`div`)({
   textAlign: 'center',
 });
 
-const AppHeader = styled(`header`)({
-  backgroundColor: '#222',
-  padding: '1rem',
-  marginBottom: '0.5em',
-  color: 'white',
-});
 
-const ButtonLink = styled(Link)({
+
+const ButtonLink = styl(Link)({
   ['button']: {
     backgroundColor: 'yellowgreen',
     border: 'none',
@@ -28,14 +27,16 @@ const ButtonLink = styled(Link)({
   },
 });
 
-const App: SFC = () => (
+
+
+const App: FunctionComponent = () => (
   <AppContainer>
-    <AppHeader>
-      <h1>Choose a Feature</h1>
-    </AppHeader>
+    <Header/>
+    <RentalList />
     <ButtonLink to="/posts">
       <button type="button">GET POSTS via Rest API</button>
     </ButtonLink>
+    <Field />
   </AppContainer>
 );
 

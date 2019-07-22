@@ -1,11 +1,12 @@
-import { all, takeLatest } from 'redux-saga/effects';
+import { takeEvery } from "redux-saga/effects";
+import { navigateTo } from "../+state/actions/navigator.actions";
+import { createFetchSaga } from "./fetch.saga";
+import { navigatorSaga } from "./navigator.saga";
 
-import { ActionTypes as fromPostsActionTypes } from '../+state/actions/posts.actions';
-import * as fromPosts from '../+state/effects/posts.effects';
-
-
-export function* watcherSaga() {
-  yield all([
-    takeLatest(fromPostsActionTypes.POSTS_GET_INIT, fromPosts.getPostsSaga)
-  ])
+export function createRootSaga({ client }: { client: any }) {
+  const worker = createFetchSaga(client);
+  return function* rootSaga() {
+    yield takeEvery("FETCH", worker);
+    yield takeEvery(navigateTo.toString(), navigatorSaga);
+  };
 }
