@@ -8,6 +8,8 @@
     "url": "https://www.cyh.io/"
   },
   "dependencies": {
+    "@types/enzyme": "^3.10.3",
+    "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/react-transition-group": "^2.9.2",
     "@types/redux-actions": "^2.6.1",
     "@types/styled-components": "^4.1.18",
@@ -52,6 +54,8 @@
     "@types/redux-logger": "^3.0.6",
     "@types/storybook__react": "^3.0.9",
     "awesome-typescript-loader": "^5.2.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "redux-devtools": "^3.4.1",
     "redux-devtools-extension": "^2.13.5",
     "serve": "^10.0.0",
