@@ -30,7 +30,7 @@ const configureStore = (routerHistory: any, preloadedState?: any) => {
             getAppliedMiddleware(routerHistory),
         ),
     );
-    sagaMiddleware.run(createRootSaga({client: axios }));
+    sagaMiddleware.run(createRootSaga({client: axios, history: routerHistory }));
     return store;
 }
 

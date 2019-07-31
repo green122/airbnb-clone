@@ -1,31 +1,48 @@
 import React, { MouseEvent } from "react";
 import styled from "styled-components";
+import { IRental } from "../../types/models";
 
-const View = styled.div`
+export const View = styled.div`
   width: 200px;
+  box-sizing: border-box;
+  box-shadow: 5px 5px 5px #4444;
+  padding: 10px;
   height: 200px;
+  padding: 10px;
 `;
+
+const HeaderStyled = styled.h4`
+  font-size: 20px;
+  text-align: center;
+`;
+
+// const SubHeaderStyled = styled.h5`
+//   font-size: 10px;
+//   text-align: center;
+// `;
 
 const Image = styled.img`
-  width: auto;
-  height: 200px;  
+  width: 100%;
+  height: auto;
 `;
 
-interface IRentalProps {
-    image: string;
-    title: string;
-    subtitle: string;
-    onClick: (event: MouseEvent) => void;
+const ImageContainer = styled.div`
+  width: 180px;
+  max-height: 90px;
+`;
+
+export interface IRentalProps {
+  data: IRental;
+  onClick: (event: MouseEvent) => void;
 }
 
-export function Rental({ image, title, subtitle, onClick }: IRentalProps) {
+export function Rental({ data, onClick }: IRentalProps) {
   return (
     <View onClick={onClick}>
-        {title}
-        {subtitle}
-      <Image src={image} />
+      <ImageContainer>
+        <Image src={data.images.picture_url} />
+      </ImageContainer>
+      <HeaderStyled>{data.name}</HeaderStyled>
     </View>
   );
 }
-
-

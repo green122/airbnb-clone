@@ -1,10 +1,10 @@
-import React, { Dispatch, useEffect } from "react";
+import React, { Dispatch, EffectCallback, useEffect } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { navigateTo } from "../../+state/actions/navigator.actions";
-import fixtures from "../../+state/reducers/fixtures";
-import { fetchRentals } from "../../+state/reducers/rental.reducer";
+import { fetchRentals, getRentals } from "../../+state/reducers/rental.reducer";
 import { Rental } from "../../components";
+import { IRental } from "../../types/models";
 
 const ViewList = styled.div`
   display: flex;
@@ -14,17 +14,22 @@ const ViewList = styled.div`
   justify-content: space-between;
 `;
 
-function RentalListRaw(props: any) {
+interface IRentalListProps {
+  rentals: IRental[] | null,
+  fetchRentals: EffectCallback
+  goToRental:  (id: string) => () => void
+}
+
+function RentalListRaw(props: IRentalListProps) {
   useEffect(props.fetchRentals, []);
+  const { rentals, goToRental } = props; 
   return (
     <ViewList>
-      {fixtures.map(rentalData => (
+      {rentals && rentals.map(rentalData => (
         <Rental
-          key={rentalData.id}
-          image={rentalData.image}
-          title={rentalData.title}
-          subtitle={rentalData.description}
-          onClick={props.goToRental(rentalData.id)}
+          key={rentalData._id}
+          data={rentalData}
+          onClick={goToRental(rentalData._id)}
         />
       ))}
     </ViewList>
@@ -42,9 +47,15 @@ const mapDispatchToProps = (dispatch: Dispatch<any>, ownProps: any): any => {
   };
 };
 
+const mapStateToProps = (state: any) => {
+  return {
+    rentals: getRentals(state)
+  }
+}
+
 const RentalList = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(RentalListRaw);
 
-export { RentalList };
+export { RentalList, RentalListRaw, IRentalListProps  };

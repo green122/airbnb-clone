@@ -28,11 +28,14 @@ const ButtonLink = styl(Link)({
 });
 
 
+const voidFunction = () => {return};
+const voidGoToFunction = (id: string) => () => {return};
+
 
 const App: FunctionComponent = () => (
   <AppContainer>
     <Header/>
-    <RentalList />
+    <RentalList fetchRentals={voidFunction} goToRental={voidGoToFunction}/>
     <ButtonLink to="/posts">
       <button type="button">GET POSTS via Rest API</button>
     </ButtonLink>

@@ -5,8 +5,7 @@ import { createBrowserHistory } from 'history';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { Route as Router, Switch } from 'react-router';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Router, Switch } from 'react-router-dom';
 
 import registerServiceWorker from './registerServiceWorker';
 import { AppRoutes } from './routes';
@@ -18,7 +17,7 @@ const store = configureStore(history);
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
-      <Router>
+      <Router history={history}>
         <Switch>
           {AppRoutes.map(route => <Route key={route.path as string} {...route} />)}
         </Switch>

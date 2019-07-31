@@ -1,10 +1,5 @@
-import { createBrowserHistory } from "history";
-
-
-
-export function getNavigationService() {
-    const history = createBrowserHistory();
+export function getNavigationService(history: any) {    
     return {
-        goToRental: (id: string) => history.push(`rental/${id}`)
+        goToRental: (id: string) => history.push(`/rental/${id}`)
     };
 }

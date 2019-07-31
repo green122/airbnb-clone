@@ -21,12 +21,13 @@ export const AppRoutes: RouteProps[] = [
     exact: true
   },
   {
+    path: "/rental/:id",
+    component: RentalPage,
+    exact: true
+  },
+  {
     path: "/rental",
     component: RentalList,
     exact: true
   },
-  {
-    path: "/rental/:id",
-    component: RentalPage,    
-  }
 ];

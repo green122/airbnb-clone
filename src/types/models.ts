@@ -13,12 +13,13 @@ export interface IPostsStoreState {
 }
 
 export interface IRental {
-  id: string;
+  _id: string;
   title: string;
   city: string;
+  name: string;
   street: string;
   category: string;
-  image: string;
+  images: {picture_url: string};
   bedrooms: number;
   description: string;
   dailyRate: number;
@@ -29,6 +30,7 @@ export interface IRental {
 
 export interface IRentalState {
   entities: IRental[] | null;
+  detailedRentals: { [id: string] : IRental } | null;
   loading: boolean;
   loaded: boolean;
 }

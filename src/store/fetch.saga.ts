@@ -13,7 +13,7 @@ export function createFetchSaga(client: any) {
     try {
       result = yield call(fetchFunction, { client, payload });
       console.log(fetchFunction, result);
-      yield put({ type: SUCCESS, result, payload });
+      yield put({ type: SUCCESS, payload: result });
     } catch (e) {
       yield put({ type: FAIL, error: e });
     }

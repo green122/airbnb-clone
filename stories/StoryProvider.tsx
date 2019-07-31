@@ -17,7 +17,7 @@ const store = createStore(
   ),
 );
 
-sagaMiddleware.run(createRootSaga({ client: axios }));
+sagaMiddleware.run(createRootSaga({ client: axios, history: {} }));
 
 export default function Provider({ story }: any) {
   return (

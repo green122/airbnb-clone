@@ -4,6 +4,7 @@
     "outDir": "build/dist",
     "module": "esnext",
     "target": "es5",
+    "noUnusedParameters": false,
     "typeRoots": [
       "node_modules/@types"
     ],
