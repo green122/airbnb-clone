@@ -35,7 +35,7 @@ const voidGoToFunction = (id: string) => () => {return};
 const App: FunctionComponent = () => (
   <AppContainer>
     <Header/>
-    <RentalList fetchRentals={voidFunction} goToRental={voidGoToFunction}/>
+    <RentalList />
     <ButtonLink to="/posts">
       <button type="button">GET POSTS via Rest API</button>
     </ButtonLink>

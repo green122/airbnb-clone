@@ -36,7 +36,12 @@ function RentalListRaw(props: IRentalListProps) {
   );
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<any>, ownProps: any): any => {
+interface IDispatchProps  {
+  fetchRentals: () => void;
+  goToRental: (id: string) => () => void;
+}
+
+const mapDispatchToProps = (dispatch: Dispatch<any>, ownProps: any): IDispatchProps => {
   return {
     fetchRentals: () => {
       dispatch(fetchRentals());
@@ -53,7 +58,7 @@ const mapStateToProps = (state: any) => {
   }
 }
 
-const RentalList = connect(
+const RentalList = connect<any, IDispatchProps, any, any>(
   mapStateToProps,
   mapDispatchToProps
 )(RentalListRaw);

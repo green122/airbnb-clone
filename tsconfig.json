@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "strictFunctionTypes": false,
     "types": ["react", "jest"],
     "rootDirs": ["src", "stories"],
     "lib": ["es2017", "dom"],
