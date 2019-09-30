@@ -16,11 +16,6 @@ const HeaderStyled = styled.h4`
   text-align: center;
 `;
 
-// const SubHeaderStyled = styled.h5`
-//   font-size: 10px;
-//   text-align: center;
-// `;
-
 const Image = styled.img`
   width: 100%;
   height: auto;

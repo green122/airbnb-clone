@@ -4,7 +4,7 @@
     "strictFunctionTypes": false,
     "types": ["react", "jest"],
     "rootDirs": ["src", "stories"],
-    "lib": ["es2017", "dom"],
+    "lib": ["es2017", "dom"]
   },
   "types": []
 }

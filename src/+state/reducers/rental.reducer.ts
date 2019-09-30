@@ -1,10 +1,9 @@
+import { produce } from 'immer';
 import { AnyAction } from "redux";
 import { handleActions } from "redux-actions";
 import { createSelector } from 'reselect';
-import { produce } from 'immer';
-import { memoizeWith, identity } from 'ramda';
 import { IFetchAction } from "../../types/common";
-import { IRentalState, IRental } from "../../types/models";
+import { IRental, IRentalState } from "../../types/models";
 import rentals from "./fixtures-big";
 
 const FETCH_RENTALS = "[Rentals] Fetch";
@@ -38,11 +37,10 @@ export function fetchRentalById(id: string): AnyAction {
 }
 
 export const getRentalsState = (state: any): IRentalState => state.rentals;
-export const getRentals = createSelector(getRentalsState, (rentalsState: IRentalState) => rentalsState.entities);
+export const getRentals =  createSelector(getRentalsState, (rentalsState: IRentalState) => rentalsState.entities);
 // export const getRentalById = createSelector(getRentalsState, id => (id), (rentalsState, id) => ((rentalsState || {}).detailedRentals || {})[id])
-export const getRentalById = createSelector(getRentalsState, id => (id), (rentalsState, id) => {
-  console.log('1111111111111111111', rentalsState);
-  console.log(id)
+export const getRentalById = createSelector(getRentalsState, (_: any, id: string) => (id), (rentalsState, id) => {
+  
   return ((rentalsState || {}).detailedRentals || {})[id]
 });
 
@@ -53,6 +51,7 @@ const initialState: IRentalState = {
   loaded: false
 };
 
+// export function setRentalById({ state, id, rental }: { state: IRentalState, id: string, rental: IRental }): IRentalState {
 export function setRentalById({ state, id, rental }: { state: IRentalState, id: string, rental: IRental }): IRentalState {
   const nextState = produce(state, draftState => {
     (draftState.detailedRentals || {})[id] = rental;
@@ -60,11 +59,11 @@ export function setRentalById({ state, id, rental }: { state: IRentalState, id: 
   return nextState;
 }
 
-export const rentalReducer = handleActions(
+export const rentalReducer = handleActions<IRentalState, any>(
   {
     [FETCH_RENTALS]: (state: IRentalState) => ({ ...state, loading: true }),
     [FETCH_RENTALS_SUCCESS]: (state: IRentalState, action: IFetchAction) => ({ ...state, loading: false, entities: action.payload }),
-    [FETCH_RENTAL_SUCCESS]: (state: IRentalState, action: IFetchAction) => setRentalById
+    [FETCH_RENTAL_SUCCESS]: (state: IRentalState, action: IFetchAction) => setRentalById({state, id: action.payload.id, rental: action.payload.rental })
   },
   initialState
 );

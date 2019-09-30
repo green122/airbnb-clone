@@ -1,7 +1,7 @@
 // import { IFetchAction } from "../../types/common";
-import { IRentalState, IRental } from "../../types/models";
+import { IRental, IRentalState } from "../../types/models";
 
-import { setRentalById, getRentalById } from './rental.reducer';
+import { getRentalById, setRentalById } from './rental.reducer';
 
 
 describe.only('set rental', () => {
@@ -22,7 +22,7 @@ describe.only('set rental', () => {
     });
     it('should get rental by id', () => {
         const newState = setRentalById({ state: fakeState, id: '000', rental: fakeRental});
-        const rental = getRentalById({rentals: newState});
+        const rental = getRentalById({rentals: newState}, '000');
         console.log('!!!!!!!!!!!!!', rental)
         expect(rental).toEqual(fakeRental);
     });

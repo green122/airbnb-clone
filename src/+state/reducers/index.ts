@@ -1,4 +1,4 @@
-import { combineReducers, Reducer } from 'redux';
+import { combineReducers } from 'redux';
 
 import { IPostsStoreState, IRentalState } from '../../types/models';
 import postsReducer from './posts.reducer';
@@ -9,13 +9,18 @@ export interface IStoreState {
     rentals: IRentalState
 }
 
-type ReducerMaps = { [K in keyof IStoreState]: Reducer<any> };
+// type ReducerMaps = { [K in keyof IStoreState]: Reducer };
 
-const allReducers: ReducerMaps = {
+const allReducers = {
     posts: postsReducer,
     rentals: rentalReducer
 };
 
-const rootReducer = combineReducers({...allReducers});
+interface IStore  {
+    posts: IPostsStoreState,
+    rentals: IRentalState,
+}
+
+const rootReducer = combineReducers<IStore>({...allReducers});
 
 export default rootReducer;

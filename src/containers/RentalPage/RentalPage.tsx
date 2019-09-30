@@ -15,6 +15,7 @@ export function RentalPage(props: IRentalPageProps) {
   const dispatch = useDispatch();
   const store = useStore().getState();
   const rental = getRentalById(store, id);
+  console.log(rental);
     useEffect(() => {
     dispatch(fetchRentalById(id));
   }, [id]);

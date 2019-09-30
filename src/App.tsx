@@ -28,8 +28,8 @@ const ButtonLink = styl(Link)({
 });
 
 
-const voidFunction = () => {return};
-const voidGoToFunction = (id: string) => () => {return};
+// const voidFunction = () => {return};
+// const voidGoToFunction = (id: string) => () => {return};
 
 
 const App: FunctionComponent = () => (
