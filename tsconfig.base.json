@@ -5,10 +5,9 @@
     "module": "esnext",
     "target": "es5",
     "noUnusedParameters": false,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "typeRoots": ["node_modules/@types"],
     "lib": ["es6", "dom", "esnext"],
+    "rootDirs": ["src", "stories"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",

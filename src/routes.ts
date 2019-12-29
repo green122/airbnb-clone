@@ -1,7 +1,7 @@
 import { RouteProps } from "react-router-dom";
 
 import App from "./App";
-import { RentalList, RentalPage } from "./containers";
+import { ListingEditor, RentalList } from "./containers";
 import Posts from "./features/Posts/Posts";
 
 // interface IRoutes extends RouteProps {
@@ -21,13 +21,13 @@ export const AppRoutes: RouteProps[] = [
     exact: true
   },
   {
-    path: "/rental/:id",
-    component: RentalPage,
+    path: "/listings/edit/:ipd",
+    component: ListingEditor,
     exact: true
   },
   {
     path: "/rental",
     component: RentalList,
     exact: true
-  },
+  }
 ];

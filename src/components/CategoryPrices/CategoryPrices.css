@@ -1,0 +1,21 @@
+.option-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px lightgray solid;
+}
+
+.option-content {
+  vertical-align: middle;
+}
+
+.price_input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid lightgray;
+  box-shadow: none;
+  background-image: none;
+  width: 120px;
+}
