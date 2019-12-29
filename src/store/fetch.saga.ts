@@ -9,11 +9,10 @@ export function createFetchSaga(client: any) {
     const [START, SUCCESS, FAIL] = types;
     yield put({ type: START });
 
-    let result;
+    let result: any;
     try {
       result = yield call(fetchFunction, { client, payload });
-      console.log(fetchFunction, result);
-      yield put({ type: SUCCESS, payload: result });
+      yield put({ type: SUCCESS, payload: result.data });
     } catch (e) {
       yield put({ type: FAIL, error: e });
     }

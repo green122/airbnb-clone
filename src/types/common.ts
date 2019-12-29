@@ -1,7 +1,14 @@
 import { AnyAction } from "redux";
+import { AxiosStatic } from "axios";
 
 export interface IFetchAction extends AnyAction {
-    types: string[];
+  types: string[];
+  payload?: any;
+  fetchFunction({
+    client,
+    payload
+  }: {
+    client: AxiosStatic;
     payload: any;
-    fetchFunction({ client, payload} : {client: any, payload: any}): any;
+  }): any;
 }
