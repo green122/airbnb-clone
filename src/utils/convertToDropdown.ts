@@ -6,11 +6,15 @@ export function convertToDropdownItem(
   options: Array<IVariation | ICategory>
 ): DropdownItemProps[] {
   const result: DropdownItemProps[] = [];
+  if (!options) {
+    return []
+  }
   options.forEach(option => {
+  const text = 'variation' in option ? option.variation : option.name;
     if (option) {
       result.push({
         key: option.id,
-        text: option.name,
+        text,
         value: option.id
       });
     }

@@ -2,15 +2,13 @@ import React, { FunctionComponent } from 'react';
 import styl from 'react-emotion';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import {Header, RentalList} from './containers';
+import {Header} from './containers';
 
 import {Field} from './Field/Field'
 
 const AppContainer = styled(`div`)({
   textAlign: 'center',
 });
-
-
 
 const ButtonLink = styl(Link)({
   ['button']: {
@@ -35,7 +33,6 @@ const ButtonLink = styl(Link)({
 const App: FunctionComponent = () => (
   <AppContainer>
     <Header/>
-    <RentalList />
     <ButtonLink to="/posts">
       <button type="button">GET POSTS via Rest API</button>
     </ButtonLink>

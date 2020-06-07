@@ -1,157 +1,140 @@
-import React, {useState, Fragment} from "react";
+import React, {useState, Fragment, useEffect, useCallback} from "react";
 import {connect} from "react-redux";
 import {
   ICategory,
   IVariation,
-  ICategoryVariaton,
-  IOption
+  IOption, ICategoryDetails
 } from "types/models";
+
+import {useHistory} from 'react-router-dom';
 import {getVariations} from "+state/reducers/variations.reducer";
-import {Dropdown, DropdownItemProps, Input} from "semantic-ui-react";
-import {clone} from "ramda";
-import CategoryPrices from "components/CategoryPrices/CategoryPrices";
+import {Button, Dropdown, DropdownItemProps, Input, LabelProps} from "semantic-ui-react";
 import {convertToDropdownItem} from "utils/convertToDropdown";
+import {
+  fetchCategoryDetails,
+  getCategoryDetails,
+  updateCategoryAction
+} from "../../+state/reducers/categories.reducer";
+import CategoryVariation from "./CategoryVariation";
+
+type updateFunction = (type: 'category' | 'variations' | 'prices' | 'varyPrice', payload: any) => void;
 
 interface ICategoryProps {
-  category: ICategory;
-  expanded: boolean;
+  categoryId: string;
+  categoryDetails?: ICategoryDetails;
   options?: DropdownItemProps[];
-  onClick: () => void;
   variations?: IVariation[];
-  update: (category: ICategory) => void;
+  update?: updateFunction;
+  proceed: () => void;
+  fetchDetails?: (categoryId: string) => void;
 }
 
-function getOptionsList(
-  categoryVariations: ICategoryVariaton[],
-  variations: IVariation[] = []
-) {
-  let variationWithPriceVary: Partial<IVariation> = {};
-  let categoryVariationWithPriceVary: ICategoryVariaton = {variationId: ""};
 
-  variations.forEach(variation => {
-    const categoryVariation = categoryVariations.find(
-      ({variationId}) => variation.id === variationId
-    );
-    if (categoryVariation && variation.priceVary) {
-      variationWithPriceVary = variation;
-      categoryVariationWithPriceVary = categoryVariation;
-      return;
+function Category({categoryId, categoryDetails, fetchDetails, variations, options, proceed, update = () => ({})}: ICategoryProps) {
+
+  useEffect(() => {
+    if (!categoryDetails && !String(categoryId).includes('temp') && fetchDetails) {
+      fetchDetails(categoryId);
     }
-  });
+  }, [categoryId, fetchDetails]);
 
-  const optionsList =
-    variationWithPriceVary && variationWithPriceVary.options
-      ? variationWithPriceVary.options
-      : [];
+  const [selected, setSelected] = useState(categoryDetails?.variations || []);
+  const [categoryName, setCategoryName] = useState(categoryDetails?.name || '');
 
-  const optionsListWithPrices: IOption[] = optionsList.map(option => {
-    const categoryOptionWithPrice = (
-      categoryVariationWithPriceVary.options || []
-    ).find(categoryOption => categoryOption.id === option.id);
-    return {
-      ...option,
-      price: categoryOptionWithPrice && categoryOptionWithPrice.price
-    };
-  });
-  return {optionsListWithPrices, variationWithPriceVary};
-}
-
-function Category({category, variations, options, update}: ICategoryProps) {
-  // const [categoryVariations, setCategoryVariations] = useState(
-  //   clone(category.variations)
-  // );
-  const selectedVariationsIds = category.variations.map(
-    ({variationId}) => variationId
-  );
-
-  const [selected, setSelected] = useState(selectedVariationsIds);
+  useEffect(() => {
+    if (categoryDetails) {
+      setSelected(categoryDetails?.variations);
+      setCategoryName(categoryDetails?.name)
+    }
+  }, [categoryDetails]);
 
   const onSelectVariationsIds = (_: any, {value: variationsIds}: { value: string[]; }) => {
-    const newVariations: ICategoryVariaton[] = [];
+    const selectedVariations: IVariation[] = [];
     variationsIds.forEach(variationId => {
-      const existingEntity = category.variations.find(
-        ({variationId: id}) => id === variationId
+      const existingEntity = selected?.find(
+        ({id}) => id === variationId
       );
       if (existingEntity) {
-        newVariations.push(clone(existingEntity));
+        selectedVariations.push(existingEntity);
       } else {
         const variationEntity = (variations || []).find(
           ({id}) => id === variationId
         );
         if (variationEntity) {
-          const newVariationOptions = variationEntity.priceVary
-            ? (variationEntity.options || [])
-              .map(({id, price}) => ({id, price}))
-            : [];
-          const newEntity: ICategoryVariaton = {
-            variationId,
-            options: newVariationOptions
-          };
-          newVariations.push(newEntity);
+          selectedVariations.push(variationEntity);
         }
       }
     });
-    // setCategoryVariations(newVariations);
-    update({...category, variations: newVariations});
-    setSelected(variationsIds);
-  };
-
-  function submitVariationWithPrices(
-    updatedOptions: IOption[],
-    editedVariation: IVariation
-  ) {
-    const newCategoryVariations: ICategoryVariaton[] = [];
-    category.variations.forEach(variation => {
-      if (variation.variationId === editedVariation.id) {
-        newCategoryVariations.push({
-          ...variation,
-          options: updatedOptions.map(({id, price}) => ({id, price}))
-        });
-      } else {
-        newCategoryVariations.push(variation);
-      }
-    });
-    update({...category, variations: newCategoryVariations});
+    setSelected(selectedVariations);
   }
 
-  const {optionsListWithPrices, variationWithPriceVary} = getOptionsList(
-    category.variations,
-    variations
-  );
-  console.log(options);
+  const updateCategory = () => {
+    const updatedCategory: ICategoryDetails = {
+      id: categoryDetails?.id || '',
+      name: categoryName,
+      variations: selected
+    }
+    update('category', updatedCategory);
+    proceed();
+  }
+
+  const history = useHistory();
+
+  const onLabelClick = useCallback((_: any, value: LabelProps) => {
+    history.push(`/listings/modify/variations/${value.value}`);
+  }, []);
+
+
+  if (!categoryDetails) {
+    return null;
+  }
 
   return (
     <Fragment>
-      <Input value={category.name} onChange={console.log} />
+      <Input value={categoryName} onChange={(_, {value}) => setCategoryName(value)}/>
       <Dropdown
         onChange={onSelectVariationsIds}
         options={options}
+        onLabelClick={onLabelClick}
+        closeOnChange={true}
         multiple={true}
         selection={true}
         fluid={true}
-        value={selected}
+        value={(selected || []).map(({id}) => id)}
       />
-      <CategoryPrices
-        options={optionsListWithPrices}
-        handleSubmitOptions={optionsValues =>
-          submitVariationWithPrices(
-            optionsValues,
-            variationWithPriceVary as IVariation
-          )
-        }
-      />
+      {selected?.map(selectedVariation =>
+        <CategoryVariation
+          key={selectedVariation.id}
+          variation={selectedVariation}
+          onVaryPriceCheck={checked => update('varyPrice', {
+            categoryId: categoryDetails?.id,
+            variationId: selectedVariation.id,
+            varyPrice: checked
+          })}
+          onUpdatePrices={optionsWithPrices => update('prices', {
+            categoryId: categoryDetails?.id,
+            variationId: selectedVariation.id,
+            options: optionsWithPrices
+          })}
+        />)
+      }
+      <Button onClick={updateCategory}>Update</Button>
+      <Button onClick={proceed}>Cancel</Button>
     </Fragment>
   );
 }
 
 export function getCategoryDropDown(
-  category: ICategory,
+  category: ICategoryDetails,
   variations: IVariation[]
 ) {
+  if (!category) {
+    return;
+  }
   const result: IVariation[] = [];
   category.variations.forEach(categoryVariation => {
     const variation = variations.find(
-      ({id}) => id === categoryVariation.variationId
+      ({id}) => id === categoryVariation.id
     );
     if (variation) {
       result.push(variation);
@@ -163,8 +146,14 @@ export function getCategoryDropDown(
 export default connect((state, ownProps: ICategoryProps) => {
   const variations = getVariations(state);
   return {
+    categoryDetails: getCategoryDetails(state, ownProps),
     variations,
     options: convertToDropdownItem(variations),
-    selected: getCategoryDropDown(ownProps.category, variations)
+    selected: ownProps.categoryDetails ? getCategoryDropDown(ownProps.categoryDetails, variations) : []
   };
+}, (dispatch) => {
+  return {
+    fetchDetails: (categoryId: string) => dispatch(fetchCategoryDetails(categoryId)),
+    update: (type: string, payload: any) => dispatch(updateCategoryAction({type, payload}))
+  }
 })(Category);

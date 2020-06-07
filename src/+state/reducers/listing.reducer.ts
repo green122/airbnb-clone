@@ -19,10 +19,13 @@ export function createListing(listing: IRawListing): IFetchAction {
     type: "FETCH",
     types: [CREATE_LISTING, CREATE_LISTING_SUCCESS, CREATE_LISTING_FAIL],
     fetchFunction: ({client}) => {
+
+      const {images, file, ...rest} = listing;
       const formData = new FormData();
       (listing.images as any[]).forEach((elem: any, i) => {
         formData.append('file', elem.file, elem.file.name)
       })
+      formData.append('listing', JSON.stringify(rest));
       return client.post(listingsRoute, formData, { headers: {'content-type': 'multipart/form-data'}});
     }
       // new Promise(resolve => {

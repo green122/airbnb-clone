@@ -1,97 +1,132 @@
-import React, { useState, Fragment } from "react";
-import { IVariation, IOption } from "types/models";
+import React, {useState, Fragment} from "react";
+import {IVariation, IOption} from "types/models";
 import {
-  Label,
-  Icon,
-  Input,
   Button,
   Checkbox,
   Grid,
-  Segment
+  Dropdown, DropdownItemProps, Input
 } from "semantic-ui-react";
 import "./Variation.css";
 
 interface IVariationProps {
-  expanded: boolean;
   variation: IVariation;
-  update: (variations: IVariation) => void;
-  onActivate: () => void;
+  options: IOption[];
+  handle: (variation: IVariation, options: IOption[]) => void;
+  cancel: () => void;
+  disableVaryPrice: boolean;
 }
 
 export function Variation({
-  variation,
-  update,
-  onActivate,
-  expanded
-}: IVariationProps) {
-  const [options, setOptions] = useState(variation.options);
-  const [priceVary, setPriceVary] = useState(variation.priceVary);
-  const deleteOption = (id: string) => () => {
-    setOptions(options.filter(option => option.id !== id));
-  };
-  const addOption = (event: KeyboardEvent) => {
-    const { value } = event.target as any;
+                            variation,
+                            handle,
+                            cancel,
+                            options,
+                            disableVaryPrice
+                          }: IVariationProps) {
+  const [optionsDropdownList, setDropDownList] = useState<DropdownItemProps[]>(options.map(option => ({
+    key: option.id,
+    value: option.id,
+    text: option.name
+  })));
+
+  const [selectedOptions, setSelectedOptions] = useState(variation.options.map(({id}) => id));
+  const [variationName, setVariationName] = useState(variation.variation);
+  const [varyPrice, setVaryPrice] = useState(variation.varyPrice);
+  const [search, setSearchQuery] = useState('');
+
+  // const deleteOption = (id: string) => () => {
+  //   setSelectedOptions(optionsDropdownList.filter(option => option.key !== id));
+  // };
+
+  const onKeyDown = (event: KeyboardEvent) => {
+    const {value} = event.target as any;
+    setSearchQuery(value);
     if (event.key === "Enter" && value) {
-      const newOption: IOption = {
-        id: `temp_${Date.now()}`,
-        name: value
+      const tempId = `temp_${Date.now()}`
+      const newOption: DropdownItemProps = {
+        key: tempId,
+        value: tempId,
+        text: value
       };
-      setOptions(options.concat(newOption));
+      setSelectedOptions(selectedOptions.concat(tempId));
+      setDropDownList(optionsDropdownList.concat(newOption));
+      setSearchQuery('');
     }
   };
+
+  const handleUpdateVariation = () => {
+    const updatedOptions: IOption[] = optionsDropdownList.map(({value, text}) => ({
+      id: value as string,
+      name: text as string
+    }));
+    const updatedVariationOption: IOption[] = selectedOptions.map(id => updatedOptions.find(option => option.id === id) as IOption);
+    handle({...variation, options: updatedVariationOption, variation: variationName, varyPrice}, updatedOptions);
+  }
+
+  const checkBoxClicked = () => {
+    if (!disableVaryPrice) {
+      setVaryPrice(!varyPrice);
+    }
+  }
+
+  console.log(search, variation, selectedOptions, optionsDropdownList);
 
   return (
     <Grid divided={true}>
       <Grid.Row>
         <Grid.Column>
-          <Segment onClick={onActivate} className="variation-item">
-            {variation.name}
-          </Segment>
+          <Input
+            onChange={(_, {value}) => setVariationName(value)}
+            value={variationName}/>
         </Grid.Column>
       </Grid.Row>
-      {expanded && (
-        <Fragment>
-          <Grid.Row>
-            <Grid.Column>
-              <Checkbox
-                label={`Prices can vary for each ${variation.name}`}
-                checked={priceVary}
-                onClick={() => setPriceVary(!priceVary)}
-              />
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column>
-              <Input
-                className="input-fluid"
-                icon="plus"
-                onKeyDown={addOption}
-              />
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column id="labels">
-              {options.map(({ name, id }) => (
-                <Label
-                  className="variation-label"
-                  basic={true}
-                  key={id}
-                  size="large"
-                >
-                  {name}
-                  <Icon name="delete" onClick={deleteOption(id)} />
-                </Label>
-              ))}
-            </Grid.Column>
-          </Grid.Row>{" "}
-          <Button
-            color="blue"
-            onClick={() => update({ ...variation, options, priceVary })}
-          >
-            Update Variation
-          </Button>
-        </Fragment>
-      )}
+      <Fragment>
+        <Grid.Row>
+          <Grid.Column>
+            <Checkbox
+              label={`Prices can vary for each ${variation.variation}`}
+              checked={varyPrice}
+              disabled={disableVaryPrice}
+              onClick={checkBoxClicked}
+            />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <Dropdown
+              clearable={true}
+              multiple={true}
+              selection={true}
+              search={true}
+              searchQuery={search}
+              // onAddItem={console.log}
+              onChange={(_, {value}) => setSelectedOptions(value as string[])}
+              onSearchChange={(_, {searchQuery}) => setSearchQuery(searchQuery)}
+              className="input-fluid"
+              options={optionsDropdownList}
+              value={selectedOptions}
+              onKeyDown={onKeyDown}
+              onKeyUp={onKeyDown}
+            />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <Button
+              color="blue"
+              onClick={handleUpdateVariation}
+            >
+              Update Variation
+            </Button>
+            <Button
+              color="red"
+              onClick={cancel}
+            >
+              Cancel
+            </Button>
+          </Grid.Column>
+        </Grid.Row>
+      </Fragment>
     </Grid>
   );
 }

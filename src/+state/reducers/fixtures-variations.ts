@@ -1,6 +1,6 @@
 import { IVariation, ICategory } from "types/models";
 
-export const variations: IVariation[] = [
+export const variations = [
   {
     id: "",
     priceVary: true,
@@ -23,10 +23,10 @@ export const variations: IVariation[] = [
   }
 ];
 
-export const categories: ICategory[] = [
+export const categories = [
   {
     id: "sss888",
     name: "Happy New Year",
-    variations: [{ variationId: "5de365d9e2942abc70c33be9" }]
+    variations: [{ id: "5de365d9e2942abc70c33be9" }]
   }
 ];

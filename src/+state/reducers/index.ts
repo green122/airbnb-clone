@@ -1,30 +1,33 @@
 import { combineReducers } from "redux";
 
-import { IPostsStoreState, IRentalState } from "../../types/models";
-import postsReducer from "./posts.reducer";
-import { rentalReducer } from "./rental.reducer";
+import {
+  ICategoriesState,
+  IListingsState,
+  IOptionsState,
+  IPostsStoreState,
+  IRentalState,
+  IVariationsState
+} from "../../types/models";
 import { variationsReducer } from "./variations.reducer";
 import { categoriesReducer } from "./categories.reducer";
 import { listingsReducer } from "./listing.reducer";
+import { optionsReducer } from "./options.reducer";
 
-export interface IStoreState {
-  posts: IPostsStoreState;
-  rentals: IRentalState;
-}
 
 // type ReducerMaps = { [K in keyof IStoreState]: Reducer };
 
 const allReducers = {
-  posts: postsReducer,
-  rentals: rentalReducer,
   variations: variationsReducer,
   categories: categoriesReducer,
   listings: listingsReducer,
+  options: optionsReducer,
 };
 
-interface IStore {
-  posts: IPostsStoreState;
-  rentals: IRentalState;
+export interface IStore {
+  variations: IVariationsState;
+  categories: ICategoriesState;
+  listings: IListingsState;
+  options: IOptionsState
 }
 
 const rootReducer = combineReducers<IStore>({ ...allReducers });

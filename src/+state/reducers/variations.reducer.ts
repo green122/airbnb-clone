@@ -1,35 +1,56 @@
-import { AnyAction } from "redux";
-import { handleActions } from "redux-actions";
-import { createSelector } from "reselect";
-import { IFetchAction } from "../../types/common";
-import { IVariationsState, IVariation } from "../../types/models";
-import { variationsRoute } from "../../constants/apiRoutes";
+import {AnyAction} from "redux";
+import {handleActions} from "redux-actions";
+import {createSelector} from "reselect";
+import {IFetchAction} from "../../types/common";
+import {IVariationsState, IVariation} from "../../types/models";
+import {variationsRoute} from "../../constants/apiRoutes";
+import {IStore} from "./index";
 
 const FETCH_VARIATIONS = "[Variations] Fetch";
 const FETCH_VARIATIONS_SUCCESS = "[Variations] Fetch Success";
 const FETCH_VARIATIONS_FAIL = "[Variations] Fetch Fail";
 
-const UPDATE_VARIATIONS = "[Variations] Update Variations";
-const UPDATE_VARIATIONS_SUCCESS = "[Variations] Update Variations Success";
-const UPDATE_VARIATIONS_FAIL = "[Variations] Update Variations Fail";
+const CREATE_VARIATION = "[Variations] Create Variations";
+export const CREATE_VARIATION_SUCCESS = "[Variations] Create Variations Success";
+const CREATE_VARIATION_FAIL = "[Variations] Create Variations Fail";
+
+
+const UPDATE_VARIATION = "[Variations] Update Variations";
+export const UPDATE_VARIATION_SUCCESS = "[Variations] Update Variations Success";
+const UPDATE_VARIATION_FAIL = "[Variations] Update Variations Fail";
 
 export function fetchVariations(): IFetchAction {
   return {
     type: "FETCH",
     types: [FETCH_VARIATIONS, FETCH_VARIATIONS_SUCCESS, FETCH_VARIATIONS_FAIL],
-    fetchFunction: ({ client }) => client.get(variationsRoute)
+    checkIsLoaded(state: IStore): boolean {
+      return Boolean(state.variations.entities.length);
+    },
+    fetchFunction: ({client}) => client.get(variationsRoute)
   };
 }
 
-export function updateVariationsAction(variations: IVariation[]): IFetchAction {
+export function updateVariationAction(variation: IVariation): IFetchAction {
   return {
     type: "FETCH",
     types: [
-      UPDATE_VARIATIONS,
-      UPDATE_VARIATIONS_SUCCESS,
-      UPDATE_VARIATIONS_FAIL
+      UPDATE_VARIATION,
+      UPDATE_VARIATION_SUCCESS,
+      UPDATE_VARIATION_FAIL
     ],
-    fetchFunction: ({ client }) => client.put(variationsRoute, variations)
+    fetchFunction: ({client}) => client.put(variationsRoute, variation)
+  };
+}
+
+export function createVariationAction(variation: IVariation): IFetchAction {
+  return {
+    type: "FETCH",
+    types: [
+      CREATE_VARIATION,
+      CREATE_VARIATION_SUCCESS,
+      CREATE_VARIATION_FAIL
+    ],
+    fetchFunction: ({client}) => client.post(variationsRoute, variation)
   };
 }
 
@@ -57,15 +78,29 @@ export const variationsReducer = handleActions<IVariationsState, any>(
     [FETCH_VARIATIONS_SUCCESS]: (
       state: IVariationsState,
       action: AnyAction
-    ) => ({ ...state, loading: false, entities: action.payload }),
-    [UPDATE_VARIATIONS]: (state: IVariationsState) => ({
+    ) => ({...state, loading: false, entities: action.payload}),
+    [UPDATE_VARIATION]: (state: IVariationsState) => ({
       ...state,
       loading: true
     }),
-    [UPDATE_VARIATIONS_SUCCESS]: (
+    [CREATE_VARIATION]: (state: IVariationsState) => ({
+      ...state,
+      loading: true
+    }),
+    [CREATE_VARIATION_SUCCESS]:
+      (state: IVariationsState) => ({
+        ...state,
+        loading: false
+      }),
+    [UPDATE_VARIATION_SUCCESS]: (
       state: IVariationsState,
       action: AnyAction
-    ) => ({ ...state, loading: false, entities: action.payload })
+    ) => {
+      return {
+        ...state,
+        loading: false,
+      }
+    }
   },
   initialState
 );

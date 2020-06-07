@@ -1,20 +1,20 @@
 import React, { useState, useCallback, ReactNode } from "react";
+import { useHistory } from "react-router-dom";
 import { Button, Header, Icon, Modal } from "semantic-ui-react";
+import {Link} from "react-router-dom";
 
 interface IModalEditorProps {
   children: ReactNode;
-  buttonLabel: string;
+  buttonLabel?: string;
   proceedHandler: () => void;
 }
 export function ModalEditor({ children, proceedHandler, buttonLabel }: IModalEditorProps) {
-  const [showModal, setShowModal] = useState(false);
-  const openModal = useCallback(() => setShowModal(true), []);
-  const closeModal = useCallback(() => setShowModal(false), []);
+  const history = useHistory();
   return (
     <Modal
-      trigger={<Button onClick={openModal}>{buttonLabel}</Button>}
-      open={showModal}
-      onClose={closeModal}
+      open={true}
+      closeOnDimmerClick={false}
+      closeOnDocumentClick={false}
     >
       <Modal.Content>
         <Modal.Description>
@@ -27,11 +27,11 @@ export function ModalEditor({ children, proceedHandler, buttonLabel }: IModalEdi
         {children}
       </Modal.Content>
       <Modal.Actions>
-        <Button primary={true} onClick={closeModal}>
+        <Button primary={true} onClick={() => history.goBack()}>
           Close <Icon name="angle right" />
         </Button>
-        <Button primary={true} onClick={proceedHandler}>
-          Proceed <Icon name="angle right" />
+        <Button primary={true}>
+           Proceed <Icon name="angle right" />
         </Button>
       </Modal.Actions>
     </Modal>

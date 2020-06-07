@@ -1,19 +1,21 @@
 import React, {useState, useEffect} from "react";
-import {IVariation} from "types/models";
+import {IOption, IVariation} from "types/models";
 import {clone} from "ramda";
 import {Variation} from "components/Variation/Variation";
-import {Button, Icon, Grid, Input} from "semantic-ui-react";
+import {Button, Icon, Grid, Input, Segment} from "semantic-ui-react";
 import {ModalEditor} from "components/ModalEditor/ModalEditor";
 
 interface IVariationsListProps {
   variations: IVariation[];
-  update: (variations: IVariation[]) => void;
+  options: IOption[];
+  selectedId?: string;
+  update: (variations: IVariation, updatedOptions: IOption[]) => void;
 }
 
-function VariationsList({variations, update}: IVariationsListProps) {
+function VariationsList({variations, update, options, selectedId}: IVariationsListProps) {
   const [variationsList, setVariationsList] = useState(clone(variations));
-  const [editingVariationId, setEditingVariationId] = useState<string | null>(
-    null
+  const [editingVariationId, setEditingVariationId] = useState<number | string | null>(
+    Number(selectedId) || null
   );
   const [createMode, setCreateMode] = useState(false);
 
@@ -27,11 +29,11 @@ function VariationsList({variations, update}: IVariationsListProps) {
     const {value} = event.target as any;
     if (event.key === "Enter" && value) {
       setCreateMode(false);
-      const id = `temp_${Date.now()}`;
+      const id = `new`;
       const newVariation: IVariation = {
         id,
-        priceVary: false,
-        name: value,
+        varyPrice: false,
+        variation: value,
         options: []
       };
       setEditingVariationId(id);
@@ -39,37 +41,45 @@ function VariationsList({variations, update}: IVariationsListProps) {
     }
   };
 
-  const updateVariation = (updatedVariation: IVariation) => {
-    const updatedEntities: IVariation[] = [];
-    variationsList.forEach(variation =>
-      updatedEntities.push(
-        variation.id === updatedVariation.id ? updatedVariation : variation
-      )
-    );
-    setVariationsList(updatedEntities);
+  const handleVariation = (updatedVariation: IVariation, updatedOptions: IOption[]) => {
+    // const updatedEntities: IVariation[] = [];
+    // variationsList.forEach(variation =>
+    //   updatedEntities.push(
+    //     variation.id === updatedVariation.id ? updatedVariation : variation
+    //   )
+    // );
+    // setVariationsList(updatedEntities);
+    update(updatedVariation, updatedOptions)
     setEditingVariationId(null);
   };
 
-  console.log(variationsList);
+  const expand = (variationId: string) => () => {
+    if (!editingVariationId) {
+      setEditingVariationId(variationId);
+    }
+  }
+
+  const isVaryPriceAlreadySet = variationsList.some(variation => variation.varyPrice);
 
   return (
-    <ModalEditor buttonLabel="Edit Variations" proceedHandler={() => update(variationsList)}>
+    <ModalEditor buttonLabel="Edit Variations" proceedHandler={console.log}>
       <Grid divided={true}>
         <Grid.Row>
           <Grid.Column>
-            {(variationsList || []).map(variation => (
-              <Variation
-                key={variation.id}
-                expanded={variation.id === editingVariationId}
-                onActivate={() =>
-                  setEditingVariationId(
-                    variation.id === editingVariationId ? null : variation.id
-                  )
-                }
-                variation={variation}
-                update={updateVariation}
-              />
-            ))}
+            {(variationsList || []).map(variation =>
+              variation.id === editingVariationId ?
+                <Variation
+                  key={variation.id}
+                  disableVaryPrice={!variation.varyPrice && isVaryPriceAlreadySet}
+                  variation={variation}
+                  options={options}
+                  handle={handleVariation}
+                  cancel={() => setEditingVariationId(null)}
+                /> :
+                <Segment onClick={expand(variation.id)} className="variation-item">
+                  {variation.variation}
+                </Segment>
+            )}
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>

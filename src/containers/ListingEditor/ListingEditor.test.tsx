@@ -2,10 +2,7 @@ import { mount } from "enzyme";
 import * as React from "react";
 import { Provider } from "react-redux";
 // import fixtures from "../../+state/reducers/fixtures-big";
-// import { Rental } from "../../components";
 import configureStore from "../../store/configureStore";
-// import { IRental, IRentalState } from "../../types/models";
-// import { RentalListRaw } from "./RentalList";
 import ListingEditor from "./ListingEditor";
 
 describe("rental page", () => {

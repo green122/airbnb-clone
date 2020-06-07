@@ -42,22 +42,18 @@ export interface IOption {
 
 export interface IVariation {
   id: string;
-  name: string;
-  priceVary: boolean;
-  defaultId?: string;
+  variation: string;
+  varyPrice?: boolean;
   options: IOption[];
-}
-
-export interface ICategoryVariaton {
-  variationId: string;
-  options?: Array<Pick<IOption, "id" | "price">>;
 }
 
 export interface ICategory {
   id: string;
   name: string;
-  variationDefPrice?: string;
-  variations: ICategoryVariaton[];
+}
+
+export interface ICategoryDetails extends  ICategory{
+  variations: IVariation[];
 }
 
 export interface IItemOption {
@@ -86,7 +82,8 @@ export interface IVariationsState {
 }
 
 export interface ICategoriesState {
-  entities: ICategory[];
+  entitiesList: ICategory[];
+  entities: {[id: string]: ICategoryDetails};
   loading: boolean;
   loaded: boolean;
 }
@@ -96,3 +93,10 @@ export interface IListingsState {
   loading: boolean;
   loaded: boolean;
 }
+
+export interface IOptionsState {
+  entities: IOption[];
+  loading: boolean;
+  loaded: boolean;
+}
+
