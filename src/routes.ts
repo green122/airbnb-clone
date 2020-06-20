@@ -2,6 +2,7 @@ import { RouteProps } from "react-router-dom";
 
 import App from "./App";
 import { ListingEditor } from "./containers";
+import {Listing} from "./containers/Listing/Listing";
 
 // interface IRoutes extends RouteProps {
 //   path: string | undefined;
@@ -12,6 +13,11 @@ export const AppRoutes: RouteProps[] = [
   {
     path: "/",
     component: App,
+    exact: true
+  },
+  {
+    path: "/listings/view/:id",
+    component: Listing,
     exact: true
   },
   {

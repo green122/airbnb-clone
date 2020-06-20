@@ -4,6 +4,7 @@ import {
   updateVariationAction
 } from "+state/reducers/variations.reducer";
 import React, {useEffect, Fragment} from "react";
+import FaceBookLogin from 'react-facebook-login';
 import {useDispatch, connect, batch} from "react-redux";
 import VariationsList from "components/VariationsList/VariationsList";
 import {IVariation, ICategory, IListing, IRawListing, IOption} from "types/models";
@@ -55,6 +56,13 @@ export function ListingEditor({
 
   return (
     <Fragment>
+      <FaceBookLogin
+        appId="958642267618042"
+        autoLoad={true}
+        fields="name,email,picture"
+        callback={console.log}
+        icon="fa-facebook"
+      />,
       <ListingForm categories={categories} submit={updateListing}/>
       {entity === 'variations' &&
         <VariationsList variations={variations} selectedId={entityId} update={updateVariationAndOptions} options={options}/>}

@@ -61,17 +61,22 @@ export interface IItemOption {
   optionId: string;
 }
 
+export interface IImageRecord {
+  url: string,
+  urlPreview: string
+}
+
 export interface IListing {
   id: string;
-  category: ICategory;
+  category: ICategoryDetails;
   options: IItemOption[];
-  photoUrls: string[];
+  images: IImageRecord[];
   amount: number;
   description: string;
 }
 
 export interface IRawListing extends Partial<IListing>{
-  images: ArrayBuffer[];
+  rawImages: ArrayBuffer[];
   file: File;
 }
 
@@ -89,7 +94,7 @@ export interface ICategoriesState {
 }
 
 export interface IListingsState {
-  entities: IListing[];
+  entities: {[id: string]: IListing};
   loading: boolean;
   loaded: boolean;
 }
