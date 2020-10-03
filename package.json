@@ -8,15 +8,21 @@
     "url": "https://www.cyh.io/"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.2.2",
+    "@reduxjs/toolkit": "^1.4.0",
     "@types/enzyme-adapter-react-16": "^1.0.5",
+    "@types/js-cookie": "^2.2.6",
+    "@types/query-string": "^6.3.0",
     "@types/ramda": "^0.26.36",
     "@types/react-facebook-login": "^4.1.2",
+    "@types/react-image-gallery": "^0.9.3",
     "@types/react-router-dom": "^5.1.5",
     "@types/react-transition-group": "^2.9.2",
     "@types/redux-actions": "^2.6.1",
     "@types/reselect": "^2.2.0",
     "@types/styled-components": "^5.1.0",
     "add": "^2.0.6",
+    "antd": "^4.5.1",
     "axios": "^0.19.0",
     "connected-react-router": "^6.8.0",
     "emotion": "^9.2.12",
@@ -24,6 +30,9 @@
     "final-form-arrays": "^3.0.2",
     "history": "^4.10.1",
     "immer": "^1.12.1",
+    "js-cookie": "^2.2.1",
+    "prettier": "^2.0.5",
+    "query-string": "^6.13.1",
     "ramda": "^0.26.1",
     "react": "^16.13.1",
     "react-dnd": "^9.3.2",
@@ -33,6 +42,9 @@
     "react-facebook-login": "^4.1.1",
     "react-final-form": "^6.3.3",
     "react-final-form-arrays": "^3.1.1",
+    "react-google-login": "^5.1.21",
+    "react-image-gallery": "^1.0.7",
+    "react-query": "^2.15.0",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
     "react-scripts-ts": "^3.1.0",
@@ -59,9 +71,11 @@
   },
   "devDependencies": {
     "@storybook/react": "^4.1.18",
+    "@testing-library/react": "^10.4.8",
     "@types/history": "^4.7.5",
     "@types/jest": "^23.3.14",
     "@types/node": "^10.17.17",
+    "@types/pretty-format": "^24.3.0",
     "@types/react": "^16.9.25",
     "@types/react-dom": "^16.9.5",
     "@types/react-redux": "^7.1.1",
@@ -74,5 +88,6 @@
     "redux-devtools-extension": "^2.13.5",
     "serve": "^10.1.2",
     "typescript": "^3.8.3"
-  }
+  },
+  "proxy": "http://localhost:3004"
 }

@@ -1,5 +1,31 @@
 body {
-  margin: 0;
-  padding: 0;
-  font-family: Helvetica, sans-serif
+    margin: 0;
+    padding: 0;
+    font-family: "Merriweather", serif;
+}
+
+.slick-object {
+    height: 400px;
+}
+
+.
+.slick-object img {
+    height: 400px;
+}
+
+.image-gallery-slide img {
+    height: 400px;
+}
+
+.facebook-button {
+    width: 100%;
+    background: #967baf;
+    color: white;
+    border: none;
+    padding: 5px;
+    text-decoration: none;
+}
+
+.fa-facebook {
+    margin-right: 5px;
 }

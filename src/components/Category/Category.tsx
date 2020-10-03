@@ -52,13 +52,13 @@ function Category({categoryId, categoryDetails, fetchDetails, variations, option
     const selectedVariations: IVariation[] = [];
     variationsIds.forEach(variationId => {
       const existingEntity = selected?.find(
-        ({id}) => id === variationId
+        ({id}) => id === Number(variationId)
       );
       if (existingEntity) {
         selectedVariations.push(existingEntity);
       } else {
         const variationEntity = (variations || []).find(
-          ({id}) => id === variationId
+          ({id}) => id === Number(variationId)
         );
         if (variationEntity) {
           selectedVariations.push(variationEntity);
@@ -102,7 +102,7 @@ function Category({categoryId, categoryDetails, fetchDetails, variations, option
         fluid={true}
         value={(selected || []).map(({id}) => id)}
       />
-      {selected?.map(selectedVariation =>
+      {(selected || []).map(selectedVariation =>
         <CategoryVariation
           key={selectedVariation.id}
           variation={selectedVariation}

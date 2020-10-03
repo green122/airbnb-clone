@@ -1,9 +1,18 @@
-import React, {useState, useEffect} from "react";
-import {IOption, IVariation} from "types/models";
-import {clone} from "ramda";
-import {Variation} from "components/Variation/Variation";
-import {Button, Icon, Grid, Input, Segment} from "semantic-ui-react";
-import {ModalEditor} from "components/ModalEditor/ModalEditor";
+import React, { useState, useEffect } from "react";
+import { IOption, IVariation } from "types/models";
+import { clone } from "ramda";
+import { Variation } from "components/Variation/Variation";
+import { Button, Icon, Grid, Input, Segment } from "semantic-ui-react";
+import { ModalEditor } from "components/ModalEditor/ModalEditor";
+import {
+  createVariation,
+  deleteVariation,
+  fetchVariations,
+  updateVariation,
+} from "../Variation/Variation.store";
+import { useAppDispatch } from "../../index";
+import { fetchOptions } from "../Variation/Option.store";
+import "./VariationsList.css";
 
 interface IVariationsListProps {
   variations: IVariation[];
@@ -12,12 +21,19 @@ interface IVariationsListProps {
   update: (variations: IVariation, updatedOptions: IOption[]) => void;
 }
 
-function VariationsList({variations, update, options, selectedId}: IVariationsListProps) {
+function VariationsList({
+  variations,
+  update,
+  options,
+  selectedId,
+}: IVariationsListProps) {
   const [variationsList, setVariationsList] = useState(clone(variations));
-  const [editingVariationId, setEditingVariationId] = useState<number | string | null>(
-    Number(selectedId) || null
-  );
+  const [editingVariationId, setEditingVariationId] = useState<
+    number | string | null
+  >(Number(selectedId) || null);
   const [createMode, setCreateMode] = useState(false);
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (variations && variations.length && variations !== variationsList) {
@@ -26,59 +42,76 @@ function VariationsList({variations, update, options, selectedId}: IVariationsLi
   }, [variations]);
 
   const addVariation = (event: KeyboardEvent) => {
-    const {value} = event.target as any;
+    const { value } = event.target as any;
     if (event.key === "Enter" && value) {
-      setCreateMode(false);
-      const id = `new`;
       const newVariation: IVariation = {
-        id,
+        id: 0,
         varyPrice: false,
         variation: value,
-        options: []
+        options: [],
       };
-      setEditingVariationId(id);
-      setVariationsList(variationsList.concat(newVariation));
+      dispatch(createVariation(newVariation));
+      setCreateMode(false);
     }
   };
 
-  const handleVariation = (updatedVariation: IVariation, updatedOptions: IOption[]) => {
-    // const updatedEntities: IVariation[] = [];
-    // variationsList.forEach(variation =>
-    //   updatedEntities.push(
-    //     variation.id === updatedVariation.id ? updatedVariation : variation
-    //   )
-    // );
-    // setVariationsList(updatedEntities);
-    update(updatedVariation, updatedOptions)
-    setEditingVariationId(null);
+  const removeVariation = (event: MouseEvent, id: number) => {
+    event.stopPropagation();
+    dispatch(deleteVariation(id));
   };
 
-  const expand = (variationId: string) => () => {
+  const handleVariation = async (
+    updatedVariation: IVariation,
+    updatedOptions: IOption[]
+  ) => {
+    setEditingVariationId(null);
+    await dispatch(updateVariation(updatedVariation));
+    await Promise.all([dispatch(fetchVariations()), dispatch(fetchOptions())]);
+  };
+
+  const expand = (variationId: number) => () => {
     if (!editingVariationId) {
       setEditingVariationId(variationId);
     }
-  }
+  };
 
-  const isVaryPriceAlreadySet = variationsList.some(variation => variation.varyPrice);
+  const isVaryPriceAlreadySet = variationsList.some(
+    (variation) => variation.varyPrice
+  );
 
   return (
     <ModalEditor buttonLabel="Edit Variations" proceedHandler={console.log}>
       <Grid divided={true}>
         <Grid.Row>
           <Grid.Column>
-            {(variationsList || []).map(variation =>
-              variation.id === editingVariationId ?
+            {(variationsList || []).map((variation) =>
+              variation.id === editingVariationId ? (
                 <Variation
                   key={variation.id}
-                  disableVaryPrice={!variation.varyPrice && isVaryPriceAlreadySet}
+                  disableVaryPrice={
+                    !variation.varyPrice && isVaryPriceAlreadySet
+                  }
                   variation={variation}
                   options={options}
                   handle={handleVariation}
                   cancel={() => setEditingVariationId(null)}
-                /> :
-                <Segment onClick={expand(variation.id)} className="variation-item">
+                />
+              ) : (
+                <Segment
+                  onClick={expand(variation.id)}
+                  className="variation-item"
+                >
                   {variation.variation}
+                  <Icon
+                    size="large"
+                    className="remove-icon"
+                    onClick={(event: MouseEvent) =>
+                      removeVariation(event, variation.id)
+                    }
+                    name="remove"
+                  />
                 </Segment>
+              )
             )}
           </Grid.Column>
         </Grid.Row>
@@ -91,7 +124,7 @@ function VariationsList({variations, update, options, selectedId}: IVariationsLi
                 labelPosition="left"
                 onClick={() => setCreateMode(true)}
               >
-                <Icon name="plus"/>
+                <Icon name="plus" />
                 Create a new variation
               </Button>
             )}

@@ -1,53 +1,35 @@
 import React, {Fragment} from "react";
-import {ICategory} from "types/models";
+import {ICategory, IListing} from "types/models";
 import {
-  Dropdown,
-  DropdownItemProps,
   Container,
   Input,
   TextArea,
   Form as FormUI,
   Button
 } from "semantic-ui-react";
-import {Field, FieldRenderProps, Form} from "react-final-form";
+import {Field, Form} from "react-final-form";
 import {convertToDropdownItem} from "utils/convertToDropdown";
 import ImageReaderField from "components/ImageReadingField/ImageReaderField";
 import {Link} from "react-router-dom";
+import {DropdownFormInput} from "../../components/DropdownFormInput/DropdownFormInput";
 
 interface IListingFormProps {
   categories: ICategory[];
+  editMode: boolean;
+  listing: IListing;
   submit: (rawResult: any) => void;
 }
 
 const required = (value: any) => (value ? undefined : "Required");
 
-const DropdownWrapper = ({
-                           fieldData,
-                           options
-                         }: {
-  fieldData: FieldRenderProps<any, HTMLElement>;
-  options: DropdownItemProps[];
-}) => {
-  const {onChange} = fieldData.input;
-  const changeHandler = (_: any, {value}: { value: any }) => onChange(value);
-  return (
-    <Dropdown
-      onChange={changeHandler}
-      placeholder="Select category"
-      value={fieldData.input.value}
-      options={options}
-      selection={true}
-      fluid={true}
-    />
-  );
-};
-
-function ListingForm({categories, submit}: IListingFormProps) {
+function ListingForm({categories, listing, submit, editMode}: IListingFormProps) {
   const options = convertToDropdownItem(categories);
+  const initialValues = {...listing, rawImages: listing?.images};
   return (
     <Container>
       <Form
         onSubmit={submit}
+        initialValues={initialValues}
         render={({handleSubmit, form, values}) => (
           <FormUI onSubmit={handleSubmit}>
             <Field name="name" validate={required}>
@@ -78,11 +60,14 @@ function ListingForm({categories, submit}: IListingFormProps) {
               {fieldData => (
                 <FormUI.Field>
                   <label>Category</label>
-                  <DropdownWrapper fieldData={fieldData} options={options}/>
+                  <DropdownFormInput
+                    placeholder="Select category"
+                    fieldData={fieldData}
+                    options={options}/>
                 </FormUI.Field>
               )}
             </Field>
-            <Field name="images">
+            <Field name="rawImages">
               {({input}) => (
                 <FormUI.Field>
                   <label>Images</label>
@@ -95,7 +80,7 @@ function ListingForm({categories, submit}: IListingFormProps) {
             </Field>
             <Button><Link to="/listings/modify/categories">Edit Categories</Link></Button>
             <Button><Link to="/listings/modify/variations">Edit Variations</Link></Button>
-            <Button type="submit">Create Listing</Button>
+            <Button type="submit">{editMode ? 'Update Listing' : 'Create Listing'}</Button>
             <pre>{JSON.stringify(values)}</pre>
           </FormUI>
         )}

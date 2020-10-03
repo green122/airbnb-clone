@@ -14,8 +14,6 @@ const HeaderText = styled.h1`
   color: black;
 `;
 
-
-
 export function Header() {
   return (
     <AppHeader>

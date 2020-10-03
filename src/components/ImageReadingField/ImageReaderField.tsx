@@ -1,50 +1,64 @@
-import React, {ChangeEvent, useReducer, useEffect} from "react";
+import React, {ChangeEvent, useReducer, useEffect, useState} from "react";
 import {Placeholder, Icon} from "semantic-ui-react";
 
 import "./ImageReaderFile.css";
 import update from "ramda/es/update";
+import {IImageRecord, RawImage} from "../../types/models";
 
 interface IImageReaderFieldProps {
   className?: string;
-  onChange: (value: any) => void;
-  value: Array<ArrayBuffer | string>;
+  onChange: (value: Array<RawImage | IImageRecord>) => void;
+  value: RawImage[];
 }
 
 interface IImageFilesState {
-  image?: ArrayBuffer | string | null;
-  file?: File | Blob,
+  image: RawImage | IImageRecord;
   loading: boolean;
+}
+
+type ActionType = {
+  type: "set_images",
+  images: IImageFilesState[]
+} | {
+  type: "start_upload",
+  uploadedNumber: number
+} | {
+  type: "success_upload",
+  payload: {
+    index: number;
+    image: ArrayBuffer;
+    file: File,
+  };
+} | {
+  type: "delete_image",
+  index: number
 }
 
 const imageReducer = (
   state: IImageFilesState[],
-  action: {
-    type: string;
-    payload: {
-      index?: number;
-      image?: ArrayBuffer;
-      file?: Blob | File,
-      uploadedFilesNumber?: number;
-    };
-  }
+  action: ActionType
 ) => {
-  const {type, payload} = action;
-  switch (type) {
+  switch (action.type) {
+    case "set_images":
+      return [...action.images]
     case "start_upload":
       return state.concat(
-        Array(payload.uploadedFilesNumber).fill({image: null, loading: true})
+        Array(action.uploadedNumber).fill({image: null, loading: true})
       );
-      break;
     case "success_upload":
-      return update(
-        payload.index!,
-        {image: payload.image, file: payload.file, loading: false},
+      const newState = update(
+        action.payload.index,
+        {
+          image: {
+            image: action.payload.image,
+            file: action.payload.file
+          }, loading: false
+        },
         state
       );
-      break;
-    case "deleteImage":
-      return state.filter((_, i) => i !== payload.index);
-      break;
+      return newState;
+    case "delete_image":
+      return state.filter((_, i) => i !== action.index);
     default:
       return state;
   }
@@ -53,15 +67,29 @@ const imageReducer = (
 function ImageReaderField({onChange, value: values}: IImageReaderFieldProps) {
   const [state, dispatch] = useReducer(
     imageReducer,
-    values ? values.map(value => ({image: value, loading: false})) : []
+    values
+      ? values.map(value => ({image: value, loading: false}))
+      : []
   );
 
+  const [fireChange, setFireChange] = useState<boolean | null>(null);
+
   useEffect(() => {
-    onChange(state);
-  }, [state]);
+    if (!values) {
+      return;
+    }
+    dispatch({type: "set_images", images: values.map(value => ({image: value, loading: false}))});
+  }, [values])
+
+  useEffect(() => {
+    if (fireChange === null) {
+      return;
+    }
+    onChange(state.map(record => record.image));
+  }, [fireChange]);
 
   console.log(state);
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     const {files} = event.target;
     if (!files) {
@@ -77,27 +105,33 @@ function ImageReaderField({onChange, value: values}: IImageReaderFieldProps) {
 
     dispatch({
       type: "start_upload",
-      payload: {uploadedFilesNumber: validatedFiles.length}
+      uploadedNumber: validatedFiles.length
     });
 
-    validatedFiles.forEach((file, index) =>
-      readUploadedFile(file).then(receivedData =>
-        dispatch({
-          type: "success_upload",
-          payload: {
-            index: index + state.length,
-            file,
-            image: receivedData as ArrayBuffer
-          }
-        })
-      )
-    );
+    async function readAndDispatch() {
+      const imagePromises =  (validatedFiles || []).map(async (file, index) => {
+          const result = await readUploadedFile(file);
+          dispatch({
+            type: "success_upload",
+            payload: {
+              index: index + state.length,
+              file,
+              image: result as ArrayBuffer
+            }
+          });
+        }
+      );
+      await Promise.all(imagePromises);
+    }
+
+    await readAndDispatch();
+    setFireChange(value => !value);
   };
 
   console.log(state);
 
-  const srcString = (imageFile?: string | ArrayBuffer | null) =>
-    typeof imageFile === "string" ? imageFile : URL.createObjectURL(imageFile);
+  const srcString = (image: RawImage | IImageRecord) =>
+    'urlPreview' in image ? image.urlPreview : URL.createObjectURL(image.file);
 
   return (
     <div className="upload-container">
@@ -122,7 +156,10 @@ function ImageReaderField({onChange, value: values}: IImageReaderFieldProps) {
           <div className="upload-image__container">
             <img key={key} className="upload-image" src={srcString(image)}/>
             <div className="upload-image-menu">
-              <Icon size="big" name="delete" onClick={() => dispatch({type: 'deleteImage', payload: {index: key}})}/>
+              <Icon size="big" name="delete" onClick={() => {
+                dispatch({type: 'delete_image', index: key});
+                setFireChange(value => !value);
+              }}/>
             </div>
           </div>
         )

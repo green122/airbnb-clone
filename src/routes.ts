@@ -1,18 +1,17 @@
 import { RouteProps } from "react-router-dom";
 
-import App from "./App";
 import { ListingEditor } from "./containers";
 import {Listing} from "./containers/Listing/Listing";
+import MainListings from "./containers/MainListings/MainListings";
+import {SignUp} from "./containers/SignUp/SignUp";
+import {SignIn} from "./containers/SignUp/SignIn";
+import {withAuthCheck} from "./HOC/withAuthCheck";
+import {Cart} from "./containers/Cart/Cart";
 
-// interface IRoutes extends RouteProps {
-//   path: string | undefined;
-//   component: React.ComponentType;
-//   exact: boolean;
-// }
 export const AppRoutes: RouteProps[] = [
   {
     path: "/",
-    component: App,
+    component: MainListings,
     exact: true
   },
   {
@@ -22,11 +21,26 @@ export const AppRoutes: RouteProps[] = [
   },
   {
     path: "/listings/edit/:id?",
-    component: ListingEditor,
+    component: withAuthCheck()(ListingEditor)
+  },
+  {
+    path: "/signin",
+    component: SignIn,
+    exact: true
+  },
+  {
+    path: "/signup",
+    component: SignUp,
+    exact: true
   },
   {
     path: "/listings/modify/:entity/:entityId?",
     component: ListingEditor,
+    exact: true
+  },
+  {
+    path: "/cart",
+    component: Cart,
     exact: true
   }
 ];

@@ -1,0 +1,6 @@
+.remove-icon {
+    position: absolute;
+    color: gray;
+    right: 0;
+    cursor: pointer;
+}

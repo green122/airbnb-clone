@@ -35,13 +35,13 @@ export interface IRentalState {
 }
 
 export interface IOption {
-  id: string;
+  id: number | string;
   name: string;
-  price?: number;
+  price?: number | {value: number};
 }
 
 export interface IVariation {
-  id: string;
+  id: number;
   variation: string;
   varyPrice?: boolean;
   options: IOption[];
@@ -52,7 +52,7 @@ export interface ICategory {
   name: string;
 }
 
-export interface ICategoryDetails extends  ICategory{
+export interface ICategoryDetails extends ICategory {
   variations: IVariation[];
 }
 
@@ -62,22 +62,40 @@ export interface IItemOption {
 }
 
 export interface IImageRecord {
-  url: string,
-  urlPreview: string
+  url: string;
+  urlPreview: string;
 }
 
 export interface IListing {
-  id: string;
+  id: number;
   category: ICategoryDetails;
   options: IItemOption[];
   images: IImageRecord[];
   amount: number;
+  from?: number;
+  name: string;
   description: string;
 }
 
-export interface IRawListing extends Partial<IListing>{
-  rawImages: ArrayBuffer[];
+export interface IVariationOptions {
+  variationId: number;
+  optionId: number | string;
+}
+
+export interface ISubmittedListing {
+  listingId: number;
+  variationsOptions?: IVariationOptions[];
+  amount?: number;
+  orderedItemId?: number;
+}
+
+export interface RawImage {
+  image: ArrayBuffer;
   file: File;
+}
+
+export interface IRawListing extends Partial<IListing> {
+  rawImages: RawImage[];
 }
 
 export interface IVariationsState {
@@ -88,13 +106,45 @@ export interface IVariationsState {
 
 export interface ICategoriesState {
   entitiesList: ICategory[];
-  entities: {[id: string]: ICategoryDetails};
+  entities: { [id: string]: ICategoryDetails };
   loading: boolean;
   loaded: boolean;
 }
 
 export interface IListingsState {
-  entities: {[id: string]: IListing};
+  list: IListing[];
+  entitiesMap: { [id: string]: IListing };
+  loading: boolean;
+  loaded: boolean;
+}
+
+export interface IUser {
+  name: string;
+  email: string;
+  avatarUrl: string;
+}
+
+export interface IAuthState {
+  isLogged: boolean;
+  user: IUser | null;
+  loading: boolean;
+  loadingCurrent: boolean;
+  loaded: boolean;
+}
+
+export interface ICartItem {
+  amount: number;
+  listing: IListing;
+  id: number;
+  orderedVariations: Array<{
+    optionId: number;
+    variationId: number;
+  }>;
+}
+
+export interface ICartState {
+  content: ICartItem[];
+  total: number;
   loading: boolean;
   loaded: boolean;
 }
@@ -104,4 +154,3 @@ export interface IOptionsState {
   loading: boolean;
   loaded: boolean;
 }
-

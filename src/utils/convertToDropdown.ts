@@ -1,21 +1,23 @@
-import { IVariation, ICategory } from "types/models";
+import { IVariation, ICategory, IOption } from "types/models";
 
 import { DropdownItemProps } from "semantic-ui-react";
 
 export function convertToDropdownItem(
-  options: Array<IVariation | ICategory>
+  options: Array<IVariation | ICategory | IOption>
 ): DropdownItemProps[] {
   const result: DropdownItemProps[] = [];
   if (!options) {
-    return []
+    return [];
   }
-  options.forEach(option => {
-  const text = 'variation' in option ? option.variation : option.name;
+  options.forEach((option) => {
+    const text = "variation" in option ? option.variation : option.name;
+    const priceValue =
+      ("price" in option && option.price) ? `$${option.price}` : '';
     if (option) {
       result.push({
         key: option.id,
-        text,
-        value: option.id
+        text: `${text} ${priceValue}`,
+        value: option.id,
       });
     }
   });

@@ -29,7 +29,7 @@ export function Variation({
     text: option.name
   })));
 
-  const [selectedOptions, setSelectedOptions] = useState(variation.options.map(({id}) => id));
+  const [selectedOptions, setSelectedOptions] = useState((variation.options || []).map(({id}) => id));
   const [variationName, setVariationName] = useState(variation.variation);
   const [varyPrice, setVaryPrice] = useState(variation.varyPrice);
   const [search, setSearchQuery] = useState('');
@@ -42,7 +42,7 @@ export function Variation({
     const {value} = event.target as any;
     setSearchQuery(value);
     if (event.key === "Enter" && value) {
-      const tempId = `temp_${Date.now()}`
+      const tempId = `temp_${Date.now()}`;
       const newOption: DropdownItemProps = {
         key: tempId,
         value: tempId,
